@@ -27,7 +27,7 @@ body {
 }
 #menu-image {
   width: 100px;
-  margin: 20px auto;
+  margin-top: 20px;
 }
 
 /* How To Play */
@@ -37,6 +37,14 @@ body {
   font-size: 20px;
   text-align: left;
   line-height: 1.5;
+}
+
+/* Role Assignment */
+#roleAssignmentPage h1 {
+  font-family: 'Chewy', cursive;
+}
+#assignedRole {
+  margin-top: 20px;
 }
 
 /* Avatars */
@@ -126,7 +134,7 @@ body {
   z-index: 10;
 }
 
-/* Buttons */
+/* General Buttons */
 button {
   width: 150px;
   padding: 10px;
