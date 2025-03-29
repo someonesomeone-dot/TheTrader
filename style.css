@@ -1,0 +1,285 @@
+@import url('https://fonts.googleapis.com/css2?family=Joti+One&display=swap');
+
+@keyframes rotateIn {
+  from { transform: rotate(-3600deg) scale(0.1); }
+  to { transform: rotate(360000000deg) scale(1); }
+}
+
+h1 {
+  font-family: 'Joti One', cursive;
+  text-align: center;
+  animation: rotateIn 3s ease-in-out forwards;
+}
+
+
+#startgamebutton{
+   text-align: center;
+    opacity: 0; /* Start invisible */
+    animation: fadeIn 2s ease-in-out forwards; /* Fade in over 1.5 seconds */
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+#settingsbutton{
+   text-align: center;
+    opacity: 0; /* Start invisible */
+    animation: fadeIn 3s ease-in-out forwards; /* Fade in over 1.5 seconds */
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+#creditsbutton{
+   text-align: center;
+    opacity: 0; /* Start invisible */
+    animation: fadeIn 4s ease-in-out forwards; /* Fade in over 1.5 seconds */
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+#howtoplaybutton{
+   text-align: center;
+    opacity: 0; /* Start invisible */
+    animation: fadeIn 1s ease-in-out forwards; /* Fade in over 1.5 seconds */
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+ #menu-image {
+    width: 100px; /* Adjust size */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Prevents inline spacing issues */
+    margin: 20px auto; /* Centers the image and adds spacing */
+  }
+
+p{
+  font-family: 'Joti One', cursive;
+}
+
+
+body {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #222;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.page {
+  margin-top: 50px;
+}
+
+/* How To Play content styling */
+.howToPlayContent {
+  max-width: 600px;
+  margin: 0 auto 20px;
+  font-size: 20px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+/* Avatar display */
+#avatarContainer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  line-height: 60px;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+}
+
+#avatarBot1 {
+  background-color: #e74c3c;
+}
+
+#avatarBot2 {
+  background-color: #3498db;
+}
+
+#avatarBot3 {
+  background-color: #2ecc71;
+}
+
+#avatarPlayer {
+  background-color: #f1c40f;
+  color: #222;
+}
+
+/* Game area layout */
+#gameArea {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  margin: 20px auto;
+  max-width: 900px;
+}
+
+/* Left-hand side: Player Hand display */
+#playerHandContainer {
+  width: 200px;
+  background-color: #444;
+  padding: 10px;
+  border: 2px solid #ffbf00;
+  border-radius: 5px;
+  text-align: center;
+  min-height: 300px;
+  overflow-y: auto;
+}
+
+#playerHandContainer h3 {
+  margin-top: 0;
+}
+
+/* Each card in hand */
+.handCard {
+  display: inline-block;
+  background-color: #555;
+  border: 2px solid #ffbf00;
+  width: 40px;
+  height: 60px;
+  margin: 5px;
+  line-height: 60px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.handCard.selected {
+  background-color: #777;
+}
+
+/* Mark used cards with reduced opacity */
+.handCard.used {
+  opacity: 0.5;
+}
+
+/* Controls panel styling */
+#controls {
+  width: 300px;
+  padding: 10px;
+  background-color: #444;
+  border: 2px solid #ffbf00;
+  border-radius: 5px;
+  text-align: left;
+}
+
+/* Bot selection buttons */
+.botBtn {
+  width: 90px;
+  padding: 10px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.botBtn:hover {
+  transform: scale(1.03);
+}
+
+/* Message overlay */
+#message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffbf00;
+  color: #222;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 20px;
+  z-index: 10;
+}
+
+/* Main Menu Buttons */
+button {
+  width: 150px;
+  padding: 10px;
+  margin: 10px auto;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+  font-family: 'Chewy', cursive;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.03);
+}
+
+h1 {
+  margin-top: 30px;
+}
+
+/* Role Boxes */
+#roleBoxes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px;
+}
+
+.roleBox {
+  width: 60px;
+  height: 60px;
+  background-color: #555;
+  border: 2px solid #ffbf00;
+  margin: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.roleBox:hover {
+  background-color: #777;
+}
