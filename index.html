@@ -23,6 +23,7 @@
     <button id="startgamebutton" onclick="showRoleAssignment()">Start Game</button>
     <button id="settingsbutton" onclick="showSettings()">Settings</button>
     <button id="creditsbutton" onclick="showCredits()">Credits</button>
+    <!-- Menu image placed below buttons -->
     <img id="menu-image" src="https://cdn-icons-png.flaticon.com/512/1006/1006555.png" alt="Menu Image">
   </div>
 
@@ -37,7 +38,7 @@
         <li><strong>Athlete</strong>: Aim for the lowest total sum.</li>
       </ul>
       <p>
-        The game lasts 10 rounds. In each round, you draw a card (from 1–100) which is added to your hand. Then, select a card from your hand and choose a bot to attempt a trade. If a trade is accepted, your card is swapped for a new card from the deck; if rejected, your card is kept and added to your total. You can also manually “Keep Selected Card” up to 2 times per game.
+        The game lasts 10 rounds. In each round, you draw a card (from 1–100) which is added to your hand. Then select a card from your hand and choose a bot to attempt a trade. If a trade is accepted, you swap your card for a new card from the deck; if rejected, your card is kept and added to your total. You may also manually “Keep Selected Card” up to 2 times per game.
       </p>
     </div>
     <button onclick="showRoleAssignment()">Proceed to Role Assignment</button>
@@ -48,6 +49,7 @@
   <div id="roleAssignmentPage" class="page hidden">
     <h1>Your Role Assignment</h1>
     <p>You will be randomly assigned a role.</p>
+    <!-- The button is now enabled so the player can click it -->
     <button id="assignRoleBtn" onclick="assignRole()">Get My Role</button>
     <div id="assignedRole" class="hidden">
       <p id="roleAnnouncement" style="font-size:2em; font-weight:bold;"></p>
@@ -58,6 +60,7 @@
   <!-- Game Page -->
   <div id="gamePage" class="page hidden">
     <h1>Ready, Let's Go!</h1>
+    
     <!-- Avatar display for bots and player -->
     <div id="avatarContainer">
       <div class="avatar" id="avatarBot1">Bot 1</div>
@@ -65,19 +68,20 @@
       <div class="avatar" id="avatarBot3">Bot 3</div>
       <div class="avatar" id="avatarPlayer">You</div>
     </div>
+    
     <div id="gameArea">
-      <!-- Your Hand (displayed on left) -->
+      <!-- Your Hand on the left -->
       <div id="playerHandContainer">
         <h3>Your Hand</h3>
         <div id="playerHand"></div>
       </div>
-      <!-- Controls and trade options (displayed on right) -->
+      <!-- Controls and trade options on the right -->
       <div id="controls">
         <p>Your Role: <span id="playerRole">-</span></p>
         <p>Your Total Sum: <span id="playerSum">0</span></p>
         <p>Round: <span id="roundCounter">1</span> / 10</p>
         <button id="drawCardBtn" onclick="drawCard()">Draw Card</button>
-        <!-- Bot selection panel (trade phase) -->
+        <!-- Bot selection panel for trading -->
         <div id="botSelection" class="hidden">
           <p>Select a Bot to trade with:</p>
           <button class="botBtn" style="background-color: #e74c3c;" onclick="initiateTrade(1)">Bot 1</button>
@@ -97,7 +101,8 @@
     <div id="guessSidebar">
       <h2>Guess Bot Roles</h2>
       <p>For each correct guess, you'll receive an adjustment of 5 points.<br>
-         (If you are a Diplomat and your score is below average, you add 5 points per correct guess; if above average, you deduct 5 points per correct guess.)</p>
+         (If you are a Diplomat, if your score is below average, you add 5 points per correct guess;
+         if above average, you deduct 5 points per correct guess.)</p>
       <form id="guessForm">
         <label>Bot 1: </label>
         <select id="guessBot1">
@@ -138,13 +143,12 @@
   <div id="creditsPage" class="page hidden">
     <h1>Credits</h1>
     <p>
-      <b>Concept and code by:</b> Joshua<br><br>
+      <b>Concept and code by:</b> Joshua <br><br>
       <b>Testimonials:</b><br>"Stunning." - Benjamin<br><br>
       For any copyright claims, please contact our helpdesk at thetraderenquiries.com.sg
     </p>
     <button onclick="goToMenu()">Back to Menu</button>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
