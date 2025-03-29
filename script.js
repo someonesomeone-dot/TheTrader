@@ -1,7 +1,7 @@
 window.onload = function() {
   // Global game variables
   let players = []; // players[0] is you; players[1-3] are bots
-  let deck = [];    // Cards numbered 1-100
+  let deck = [];    // Cards 1-100
   let currentRound = 0;
   const totalRounds = 10;
   const roles = ["Businessman", "Diplomat", "Athlete"];
@@ -60,7 +60,7 @@ window.onload = function() {
   // ---------------------
   // Role Assignment (Automatic)
   // ---------------------
-  // When the player clicks "Get My Role", assign a random role and then show it for 10 seconds before proceeding.
+  // When the player clicks "Get My Role", assign a random role and show it for 10 seconds.
   window.assignRole = function() {
     hideAllPages();
     document.getElementById("roleAssignmentPage").classList.remove("hidden");
@@ -70,40 +70,28 @@ window.onload = function() {
     for (let i = 1; i < 4; i++) {
       players[i] = { id: i, sum: 0, role: roles[Math.floor(Math.random() * roles.length)], currentCard: null };
     }
-    // Display the assigned role in big text with explanation in brackets.
-    const roleMsg = playerRole === "Businessman" ? "Businessman (Aim for the highest total)" :
-                    playerRole === "Diplomat" ? "Diplomat (Aim for a middle total)" :
-                    "Athlete (Aim for the lowest total)";
+    // Display the assigned role in big text with explanation
+    let roleMsg = "";
+    if (playerRole === "Businessman") {
+      roleMsg = "Businessman (Aim for the highest total)";
+    } else if (playerRole === "Diplomat") {
+      roleMsg = "Diplomat (Aim for a middle total)";
+    } else {
+      roleMsg = "Athlete (Aim for the lowest total)";
+    }
     const roleAnnouncement = document.getElementById("roleAnnouncement");
     roleAnnouncement.innerText = roleMsg;
-    roleAnnouncement.style.fontSize = "2em";
     document.getElementById("assignedRole").classList.remove("hidden");
-    // Disable the "Get My Role" button so it cannot be pressed again.
+    // Disable the button so the role cannot be changed
     document.getElementById("assignRoleBtn").disabled = true;
-    // After 10 seconds, automatically fade into the game.
+    // After 10 seconds, automatically proceed to the game.
     setTimeout(() => {
-      // Optional: add a fade-out effect here (using CSS transitions)
       startGame();
     }, 10000);
   };
 
-  // ---------------------
-  // Role Selection (Legacy if needed)
-  // ---------------------
-  function generateRoleBoxes() {
-    const boxesContainer = document.getElementById("roleBoxes");
-    boxesContainer.innerHTML = "";
-    // (Optional: if you want to let the player pick, you can uncomment the below.)
-    /*
-    for (let i = 0; i < 10; i++) {
-      const box = document.createElement("div");
-      box.className = "roleBox";
-      box.textContent = i + 1;
-      box.onclick = assignPlayerRole;
-      boxesContainer.appendChild(box);
-    }
-    */
-  }
+  // (Legacy role selection code removed)
+
   // ---------------------
   // Game Functions
   // ---------------------
@@ -131,10 +119,10 @@ window.onload = function() {
     document.getElementById("drawCardBtn").style.display = "block";
   };
 
-  // When the player clicks "Draw Card": add a new card to the hand,
-  // then hide the draw card button and show the bot selection panel.
+  // When the player clicks "Draw Card"
   window.drawCard = function() {
     if (currentRound < totalRounds && deck.length >= 4) {
+      // Hide the draw card button during trade phase.
       document.getElementById("drawCardBtn").style.display = "none";
       const drawnCard = deck.pop();
       playerHand.push({ value: drawnCard, used: false });
@@ -143,12 +131,12 @@ window.onload = function() {
       for (let i = 1; i < 4; i++) {
         players[i].currentCard = deck.pop();
       }
-      // Show bot selection panel so the player can choose a trade.
+      // Show the bot selection panel for trading.
       document.getElementById("botSelection").classList.remove("hidden");
     }
   };
 
-  // Update the player's hand display.
+  // Update player's hand display.
   function updatePlayerHandDisplay() {
     const handDiv = document.getElementById("playerHand");
     handDiv.innerHTML = "";
@@ -169,7 +157,7 @@ window.onload = function() {
     });
   }
 
-  // When the player clicks a card in hand.
+  // When player selects a card from hand.
   function selectHandCard(index) {
     if (playerHand[index].used) return;
     selectedCardIndex = index;
@@ -184,7 +172,7 @@ window.onload = function() {
     document.getElementById("botSelection").classList.add("hidden");
   }
 
-  // Called when the player clicks on a bot button to trade.
+  // Called when the player clicks a bot button to initiate trade.
   window.initiateTrade = function(botIndex) {
     if (selectedCardIndex === null) {
       alert("Please select a card from your hand first.");
@@ -193,18 +181,16 @@ window.onload = function() {
     hideBotSelection();
     const selectedCard = playerHand[selectedCardIndex];
     const bot = players[botIndex];
-    // Remove any confirmation dialog; simply decide trade outcome.
-    // For simplicity, let’s assume the bot’s decision is based on its own hidden card:
+    // Process trade immediately without extra confirmation.
     if (botWillingToTrade(bot)) {
-      // Trade accepted: swap the player's card with a new card from the deck.
+      // Trade accepted: simulate drawing a new card as the traded result.
       let newCard = deck.pop();
-      // Mark the traded card as used (finalizing it so it cannot be re-traded).
       selectedCard.used = true;
       players[0].sum += newCard;
       showMessage("Trade accepted! You received: " + newCard);
     } else {
-      // Trade rejected: finalize the selected card.
-      showMessage("Trade rejected! Your card is kept: " + selectedCard.value);
+      // Trade rejected: finalize selected card.
+      showMessage("Trade rejected! Card kept: " + selectedCard.value);
       selectedCard.used = true;
       players[0].sum += selectedCard.value;
     }
@@ -231,15 +217,14 @@ window.onload = function() {
     updateDisplay();
   };
 
-  // Finalize (keep) a card: mark as used and add its value to player's total.
+  // Finalize a card: mark as used and add its value to player's total.
   function finalizeCard(index) {
     const card = playerHand[index];
     card.used = true;
     players[0].sum += card.value;
   }
 
-  // Finalize the round: increment round counter, clear temporary selections,
-  // and show the draw card button for the next round (or proceed to end game).
+  // Finalize the round: update counter and prepare for next round.
   function finalizeRound() {
     currentRound++;
     if (currentRound < totalRounds) {
@@ -265,7 +250,7 @@ window.onload = function() {
     }, 1500);
   }
 
-  // Bot decision function: based solely on its own hidden card.
+  // Bot decision function based on its hidden card.
   function botWillingToTrade(bot) {
     if (bot.role === "Businessman") {
       return bot.currentCard < 50;
@@ -330,7 +315,7 @@ window.onload = function() {
     resultsDiv.innerHTML = resultsHTML;
   }
   function endGame() {
-    // Stop background music and play game-over music.
+    // Stop background music and play game over music.
     document.getElementById("bgMusic").pause();
     document.getElementById("gameOverMusic").play();
     showGuessSidebar();
