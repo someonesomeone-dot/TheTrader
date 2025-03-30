@@ -60,42 +60,25 @@ window.onload = function() {
     document.getElementById("creditsPage").classList.remove("hidden");
   };
 
-  window.showRoleSelection = function() {
-    hideAllPages();
-    document.getElementById("roleSelectionPage").classList.remove("hidden");
-    generateRoleBoxes();
-  };
-
   // ---------------------
-  // Role Selection Functions
+  // Role Assignment and Reveal
   // ---------------------
-  function generateRoleBoxes() {
-    const boxesContainer = document.getElementById("roleBoxes");
-    boxesContainer.innerHTML = "";
-    // Generate 10 boxes (visual selection)
-    for (let i = 0; i < 10; i++) {
-      const box = document.createElement("div");
-      box.className = "roleBox";
-      box.textContent = i + 1;
-      box.onclick = assignPlayerRole;
-      boxesContainer.appendChild(box);
-    }
-  }
-
-  function assignPlayerRole() {
-    const randomIndex = Math.floor(Math.random() * roles.length);
-    playerRole = roles[randomIndex];
-    // Initialize player and bots:
+  // Instead of a manual choice, assign a random role when "Start Game" is clicked.
+  window.assignRoleAndReveal = function() {
+    // Assign player role randomly and initialize bots.
+    playerRole = roles[Math.floor(Math.random() * roles.length)];
     players[0] = { id: 0, sum: 0, role: playerRole };
     for (let i = 1; i < 4; i++) {
       const botRole = roles[Math.floor(Math.random() * roles.length)];
-      // Bots will draw a card each round (hidden)
       players[i] = { id: i, sum: 0, role: botRole, currentCard: null };
     }
-    document.getElementById("playerRoleDisplay").textContent = playerRole;
-    document.getElementById("playerRole").textContent = playerRole;
-    document.getElementById("selectedRole").classList.remove("hidden");
-  }
+    // Fade transition: hide current page, then show role reveal page after a brief delay.
+    hideAllPages();
+    setTimeout(function(){
+      document.getElementById("roleRevealPage").classList.remove("hidden");
+      document.getElementById("playerRoleDisplay").textContent = playerRole;
+    }, 1000); // 1 second suspense delay
+  };
 
   // ---------------------
   // Game Functions
@@ -108,15 +91,16 @@ window.onload = function() {
     selectedCardIndex = null;
     manualKeepCount = 0;
     initializeDeck();
-    // If player role not set, assign default:
+    // In case role was not set, assign a default.
     if (!players[0]) {
-      players[0] = { id: 0, sum: 0, role: "Diplomat" };
+      playerRole = "Diplomat";
+      players[0] = { id: 0, sum: 0, role: playerRole };
       for (let i = 1; i < 4; i++) {
         players[i] = { id: i, sum: 0, role: roles[Math.floor(Math.random() * roles.length)], currentCard: null };
       }
-      playerRole = players[0].role;
       document.getElementById("playerRole").textContent = playerRole;
     }
+    document.getElementById("playerRole").textContent = playerRole;
     updateDisplay();
     document.getElementById("drawCardBtn").style.display = "block";
   };
@@ -204,11 +188,10 @@ window.onload = function() {
       selectedCard.value = bot.currentCard;
       bot.currentCard = temp;
       showMessage("Bot " + botIndex + " accepted the trade!");
-      // In accepted trades, do NOT finalize the card so you may trade it again.
+      // In accepted trades, the card remains in your hand.
     } else {
-      // Trade rejected: automatically keep (finalize) your selected card.
-      showMessage("Bot " + botIndex + " rejected the trade. Your card is kept.");
-      finalizeCard(selectedCardIndex);
+      // Trade rejected: do not finalize the card so it remains available.
+      showMessage("Bot " + botIndex + " rejected the trade. Your card remains available.");
     }
     selectedCardIndex = null;
     finalizeRound();
@@ -227,6 +210,7 @@ window.onload = function() {
     }
     manualKeepCount++;
     showMessage("You kept your card.");
+    // Finalize the card: mark it as used and add its value to player's total.
     finalizeCard(selectedCardIndex);
     selectedCardIndex = null;
     finalizeRound();
@@ -331,7 +315,6 @@ window.onload = function() {
   // Expose functions globally.
   window.goToMenu = goToMenu;
   window.showHowToPlay = showHowToPlay;
-  window.showRoleSelection = showRoleSelection;
   window.showSettings = showSettings;
   window.showCredits = showCredits;
   window.drawCard = drawCard;
