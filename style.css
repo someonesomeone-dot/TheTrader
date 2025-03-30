@@ -1,88 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=Joti+One&display=swap');
 
-@keyframes rotateIn {
-  from { transform: rotate(-3600deg) scale(0.1); }
-  to { transform: rotate(360000000deg) scale(1); }
+/* Consolidated fadeIn animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
+/* Removed rotating animation from h1 */
 h1 {
   font-family: 'Joti One', cursive;
   text-align: center;
-  animation: rotateIn 3s ease-in-out forwards;
+  margin-top: 30px;
 }
 
-
+/* Main Menu Buttons with fadeIn timing */
 #startgamebutton{
    text-align: center;
-    opacity: 0; /* Start invisible */
-    animation: fadeIn 2s ease-in-out forwards; /* Fade in over 1.5 seconds */
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+   opacity: 0;
+   animation: fadeIn 2s ease-in-out forwards;
+}
 
 #settingsbutton{
    text-align: center;
-    opacity: 0; /* Start invisible */
-    animation: fadeIn 3s ease-in-out forwards; /* Fade in over 1.5 seconds */
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+   opacity: 0;
+   animation: fadeIn 3s ease-in-out forwards;
+}
 
 #creditsbutton{
    text-align: center;
-    opacity: 0; /* Start invisible */
-    animation: fadeIn 4s ease-in-out forwards; /* Fade in over 1.5 seconds */
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+   opacity: 0;
+   animation: fadeIn 4s ease-in-out forwards;
+}
 
 #howtoplaybutton{
    text-align: center;
-    opacity: 0; /* Start invisible */
-    animation: fadeIn 1s ease-in-out forwards; /* Fade in over 1.5 seconds */
-  }
+   opacity: 0;
+   animation: fadeIn 1s ease-in-out forwards;
+}
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
- #menu-image {
-    width: 100px; /* Adjust size */
-    height: auto; /* Maintain aspect ratio */
-    display: block; /* Prevents inline spacing issues */
-    margin: 20px auto; /* Centers the image and adds spacing */
-  }
+#menu-image {
+    width: 100px;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+}
 
 p{
   font-family: 'Joti One', cursive;
 }
-
 
 body {
   text-align: center;
@@ -189,7 +154,6 @@ body {
   background-color: #777;
 }
 
-/* Mark used cards with reduced opacity */
 .handCard.used {
   opacity: 0.5;
 }
@@ -252,10 +216,6 @@ button {
 button:hover {
   background-color: #0056b3;
   transform: scale(1.03);
-}
-
-h1 {
-  margin-top: 30px;
 }
 
 /* Role Boxes */
