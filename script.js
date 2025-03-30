@@ -72,6 +72,7 @@ window.onload = function() {
   function generateRoleBoxes() {
     const boxesContainer = document.getElementById("roleBoxes");
     boxesContainer.innerHTML = "";
+    // Generate 10 boxes (visual selection)
     for (let i = 0; i < 10; i++) {
       const box = document.createElement("div");
       box.className = "roleBox";
@@ -305,12 +306,12 @@ window.onload = function() {
   // Display final results.
   function showResults(adjustment) {
     const resultsDiv = document.getElementById("results");
-    let resultsHTML = <p>Your Role: ${players[0].role}</p>;
-    resultsHTML += <p>Your Total Sum (after adjustments): ${players[0].sum}</p>;
+    let resultsHTML = `<p>Your Role: ${players[0].role}</p>`;
+    resultsHTML += `<p>Your Total Sum (after adjustments): ${players[0].sum}</p>`;
     for (let i = 1; i < players.length; i++) {
-      resultsHTML += <p>Bot ${i} (Role: ${players[i].role})</p>;
+      resultsHTML += `<p>Bot ${i} (Role: ${players[i].role})</p>`;
     }
-    resultsHTML += <p>Guess Adjustment: ${adjustment >= 0 ? '+' : ''}${adjustment} points</p>;
+    resultsHTML += `<p>Guess Adjustment: ${adjustment >= 0 ? '+' : ''}${adjustment} points</p>`;
     const sums = players.map(p => p.sum);
     let outcome = "";
     if (players[0].role === "Businessman") {
@@ -323,7 +324,7 @@ window.onload = function() {
       outcome = (players[0].sum !== Math.max(...sums) && players[0].sum !== Math.min(...sums)) ?
         "You win! (Your sum is in the middle)" : "You lose. (Your sum is not in the middle)";
     }
-    resultsHTML += <h2>${outcome}</h2>;
+    resultsHTML += `<h2>${outcome}</h2>`;
     resultsDiv.innerHTML = resultsHTML;
   }
 
