@@ -6,7 +6,7 @@
   to { opacity: 1; }
 }
 
-/* Removed rotating animation from h1 */
+/* h1 style without rotation */
 h1 {
   font-family: 'Joti One', cursive;
   text-align: center;
@@ -216,30 +216,4 @@ button {
 button:hover {
   background-color: #0056b3;
   transform: scale(1.03);
-}
-
-/* Role Boxes */
-#roleBoxes {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 20px;
-}
-
-.roleBox {
-  width: 60px;
-  height: 60px;
-  background-color: #555;
-  border: 2px solid #ffbf00;
-  margin: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  transition: background-color 0.3s;
-}
-
-.roleBox:hover {
-  background-color: #777;
 }
