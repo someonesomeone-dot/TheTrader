@@ -328,42 +328,4 @@ const gameOverSound = new Audio("game-over-252897.mp3");
 
 // Loop background music
 bgMusic.loop = true;
-bgMusic.volume = 0.5; // Default volume
-
-// Function to start background music
-function startBackgroundMusic() {
-    bgMusic.play();
-}
-
-// Function to play game over sound
-function playGameOverSound() {
-    gameOverSound.volume = bgMusic.volume; // Match volume with background music
-    gameOverSound.play();
-}
-
-// Function to update volume
-function updateVolume(volume) {
-    bgMusic.volume = volume;
-    gameOverSound.volume = volume;
-}
-
-// Event listener for audio slider (make sure the settings page has this slider)
-document.addEventListener("DOMContentLoaded", function () {
-    const audioSlider = document.getElementById("audio-slider");
-    
-    if (audioSlider) {
-        audioSlider.addEventListener("input", function () {
-            updateVolume(this.value);
-        });
-    }
-});
-
-// Start background music when the game begins
-document.getElementById("start-game-btn").addEventListener("click", function() {
-    startBackgroundMusic();
-});
-
-// Play game over sound when the game ends
-document.getElementById("game-over").addEventListener("click", function() {
-    playGameOverSound();
-});
+bgMusic.volume = 0.5; // Default
