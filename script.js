@@ -134,7 +134,6 @@ window.onload = function() {
     if (playerHand[index].used) return;
     selectedCardIndex = index;
     updatePlayerHandDisplay();
-    showBotSelection();    // ← EDITED: now you can open the trade UI anytime you click a card
   }
 
   function showBotSelection() {
@@ -155,7 +154,7 @@ window.onload = function() {
   }
 
   // ---------------------
-  // 1) Trade stays open until “Keep Card”
+  // 1) Modified: Trade stays open until you “Keep Card”
   // ---------------------
   window.initiateTrade = function(botIndex) {
     if (selectedCardIndex === null) {
@@ -165,12 +164,13 @@ window.onload = function() {
     const selectedCard = playerHand[selectedCardIndex];
     const bot = players[botIndex];
     if (botWillingToTrade(bot)) {
+      // swap values
       [selectedCard.value, bot.currentCard] = [bot.currentCard, selectedCard.value];
       showMessage("Bot " + botIndex + " accepted the trade!");
     } else {
       showMessage("Bot " + botIndex + " rejected the trade. Keep trying!");
     }
-    // no finalizeRound, no hideBotSelection → you can keep trading or pick another card
+    // ↳ no finalizeRound, no hideBotSelection → you can pick another bot or another card
     selectedCardIndex = null;
     updateDisplay();
   };
@@ -195,11 +195,20 @@ window.onload = function() {
     updateDisplay();
   };
 
+  // (we no longer mark used or add to players[0].sum here—
+  //   we’ll sum everything at the end in showPreAdjustmentTotals)
+
+  function finalizeCard(index) {
+    const card = playerHand[index];
+    card.used = true;
+    players[0].sum += card.value;
+  }
+
   // ---------------------
   // Round Progression
   // ---------------------
   function finalizeRound() {
-    // bots tally each round
+    // still tally bot cards into their .sum each round
     for (let i = 1; i < players.length; i++) {
       players[i].sum += players[i].currentCard;
       players[i].currentCard = null;
@@ -209,12 +218,13 @@ window.onload = function() {
     if (currentRound < totalRounds) {
       document.getElementById("drawCardBtn").style.display = "block";
     } else {
+      // 3) at end of round 10, show totals before guess
       showPreAdjustmentTotals();
     }
   }
 
   // ---------------------
-  // 3) Show totals before guessing
+  // 3) Show totals (your box + bots) before guessing
   // ---------------------
   function showPreAdjustmentTotals() {
     hideAllPages();
@@ -226,18 +236,20 @@ window.onload = function() {
       document.body.appendChild(preDiv);
     }
 
-    // sum every card in your hand
+    // compute your hand total
     const playerTotal = playerHand.reduce((sum, c) => sum + c.value, 0);
+    // store it so adjustments work off this
     players[0].sum = playerTotal;
 
-    let html = `<h2>All ${totalRounds} Rounds Done!</h2>`;
-    html += `<p>Your Total (pre‑guesses/adjustments): ${playerTotal}</p>`;
+    let html = <h2>All ${totalRounds} Rounds Done!</h2>;
+    html += <p>Your Total (pre‑guesses/adjustments): ${playerTotal}</p>;
     for (let i = 1; i < players.length; i++) {
-      html += `<p>Bot ${i} (${players[i].role}): ${players[i].sum}</p>`;
+      html += <p>Bot ${i} (${players[i].role}): ${players[i].sum}</p>;
     }
     preDiv.innerHTML = html;
     preDiv.classList.remove("hidden");
 
+    // after 3 s, move to the guess screen
     setTimeout(showGuessSidebar, 3000);
   }
 
@@ -287,12 +299,12 @@ window.onload = function() {
 
   function showResults(adjustment) {
     const rd = document.getElementById("results");
-    let html = `<p>Your Role: ${players[0].role}</p>`
-             + `<p>Your Total (post‑adjust): ${players[0].sum}</p>`;
+    let html = <p>Your Role: ${players[0].role}</p>
+             + <p>Your Total (post‑adjust): ${players[0].sum}</p>;
     for (let i = 1; i < players.length; i++) {
-      html += `<p>Bot ${i} (Role: ${players[i].role})</p>`;
+      html += <p>Bot ${i} (Role: ${players[i].role})</p>;
     }
-    html += `<p>Guess Adj: ${adjustment >= 0 ? "+" : ""}${adjustment}</p>`;
+    html += <p>Guess Adj: ${adjustment >= 0 ? "+" : ""}${adjustment}</p>;
     const sums = players.map(p => p.sum);
     let outcome;
     if (playerRole === "Businessman") {
@@ -305,7 +317,7 @@ window.onload = function() {
       outcome = (players[0].sum !== Math.max(...sums) && players[0].sum !== Math.min(...sums))
         ? "You win! (Middle sum)" : "You lose. (Not middle)";
     }
-    rd.innerHTML = html + `<h2>${outcome}</h2>`;
+    rd.innerHTML = html + <h2>${outcome}</h2>;
   }
 
   // Expose
