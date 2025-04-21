@@ -1,16 +1,16 @@
 window.onload = function() {
   // Global game variables
-  let players = []; // players[0] is you; players[1-3] are bots
-  let deck = [];    // Cards numbered 1-100
+  let players = [];        // players[0] is you; players[1–3] are bots
+  let deck = [];           // cards 1–100
   let currentRound = 0;
   const totalRounds = 10;
   const roles = ["Businessman", "Diplomat", "Athlete"];
   let playerRole = "";
-  // Each card is stored as an object: { value: number, used: boolean }
+  // your hand holds all drawn cards
   let playerHand = [];
-  let selectedCardIndex = null; // Index in playerHand of selected card
+  let selectedCardIndex = null;
 
-  // Manual keep count (limited to 2 per game)
+  // Manual‐keep count (limits)
   let manualKeepCount = 0;
   const maxManualKeeps = 2;
 
@@ -26,9 +26,7 @@ window.onload = function() {
 
   function initializeDeck() {
     deck = [];
-    for (let i = 1; i <= 100; i++) {
-      deck.push(i);
-    }
+    for (let i = 1; i <= 100; i++) deck.push(i);
     shuffleDeck();
   }
 
@@ -36,31 +34,29 @@ window.onload = function() {
   // Navigation Functions
   // ---------------------
   function hideAllPages() {
-    document.querySelectorAll("div[id$='Page'], #menu").forEach(page => page.classList.add("hidden"));
+    document.querySelectorAll("div[id$='Page'], #menu")
+            .forEach(el => el.classList.add("hidden"));
   }
 
   window.goToMenu = function() {
     hideAllPages();
     document.getElementById("menu").classList.remove("hidden");
   };
-
   window.showHowToPlay = function() {
     hideAllPages();
     document.getElementById("howToPlayPage").classList.remove("hidden");
   };
-
   window.showSettings = function() {
     hideAllPages();
     document.getElementById("settingsPage").classList.remove("hidden");
   };
-
   window.showCredits = function() {
     hideAllPages();
     document.getElementById("creditsPage").classList.remove("hidden");
   };
 
   // ---------------------
-  // Role Assignment and Reveal
+  // Role Assignment / Reveal
   // ---------------------
   window.assignRoleAndReveal = function() {
     playerRole = roles[Math.floor(Math.random() * roles.length)];
@@ -70,14 +66,14 @@ window.onload = function() {
       players[i] = { id: i, sum: 0, role: botRole, currentCard: null };
     }
     hideAllPages();
-    setTimeout(function(){
+    setTimeout(() => {
       document.getElementById("roleRevealPage").classList.remove("hidden");
       document.getElementById("playerRoleDisplay").textContent = playerRole;
-    }, 1000); // 1 second suspense delay
+    }, 1000);
   };
 
   // ---------------------
-  // Game Functions
+  // Start / Draw
   // ---------------------
   window.startGame = function() {
     hideAllPages();
@@ -109,7 +105,7 @@ window.onload = function() {
       const drawnCard = deck.pop();
       playerHand.push({ value: drawnCard, used: false });
       updatePlayerHandDisplay();
-      // Each bot draws a hidden card for this round.
+      // bots each draw a hidden card
       for (let i = 1; i < 4; i++) {
         players[i].currentCard = deck.pop();
       }
@@ -118,17 +114,19 @@ window.onload = function() {
     }
   };
 
+  // ---------------------
+  // Hand / Selection UI
+  // ---------------------
   function updatePlayerHandDisplay() {
     const handDiv = document.getElementById("playerHand");
     handDiv.innerHTML = "";
-    playerHand.forEach((card, index) => {
-      const cardDiv = document.createElement("div");
-      cardDiv.className = "handCard";
-      if (card.used) cardDiv.classList.add("used");
-      cardDiv.textContent = card.value;
-      if (!card.used) cardDiv.onclick = () => selectHandCard(index);
-      if (index === selectedCardIndex) cardDiv.classList.add("selected");
-      handDiv.appendChild(cardDiv);
+    playerHand.forEach((card, idx) => {
+      const d = document.createElement("div");
+      d.className = "handCard" + (card.used ? " used" : "");
+      d.textContent = card.value;
+      if (!card.used) d.onclick = () => selectHandCard(idx);
+      if (idx === selectedCardIndex) d.classList.add("selected");
+      handDiv.appendChild(d);
     });
   }
 
@@ -141,64 +139,64 @@ window.onload = function() {
   function showBotSelection() {
     document.getElementById("botSelection").classList.remove("hidden");
   }
-
   function hideBotSelection() {
     document.getElementById("botSelection").classList.add("hidden");
   }
 
+  // ---------------------
+  // Bot Logic
+  // ---------------------
   function botWillingToTrade(bot) {
-    if (bot.role === "Businessman") {
-      return bot.currentCard < 50;
-    } else if (bot.role === "Athlete") {
-      return bot.currentCard > 50;
-    } else if (bot.role === "Diplomat") {
-      return (bot.currentCard < 40 || bot.currentCard > 60);
-    }
+    if (bot.role === "Businessman") return bot.currentCard < 50;
+    if (bot.role === "Athlete")    return bot.currentCard > 50;
+    if (bot.role === "Diplomat")   return (bot.currentCard < 40 || bot.currentCard > 60);
     return false;
   }
 
   // ---------------------
-  // 1) allow continued trading even after reject/trade
+  // 1) Modified: Trade stays open until you “Keep Card”
   // ---------------------
   window.initiateTrade = function(botIndex) {
     if (selectedCardIndex === null) {
       alert("Please select a card from your hand first.");
       return;
     }
-    // (we no longer hide the selection panel here,
-    //  so you can pick another bot right away)
     const selectedCard = playerHand[selectedCardIndex];
     const bot = players[botIndex];
-
     if (botWillingToTrade(bot)) {
-      [selectedCard.value, bot.currentCard] =
-        [bot.currentCard, selectedCard.value];
+      // swap values
+      [selectedCard.value, bot.currentCard] = [bot.currentCard, selectedCard.value];
       showMessage("Bot " + botIndex + " accepted the trade!");
     } else {
-      showMessage("Bot " + botIndex + " rejected the trade. Try another bot or keep your card.");
+      showMessage("Bot " + botIndex + " rejected the trade. Keep trying!");
     }
-
-    // <-- note: no finalizeCard or finalizeRound here,
-    //     so you can keep trading until you hit "Keep Card"
+    // ↳ no finalizeRound, no hideBotSelection → you can pick another bot or another card
+    selectedCardIndex = null;
+    updateDisplay();
   };
 
-  function keepSelectedCard() {
+  // ---------------------
+  // 2) “Keep Card” now just ends the round
+  // ---------------------
+  window.keepSelectedCard = function() {
     if (selectedCardIndex === null) {
       alert("Please select a card from your hand first.");
       return;
     }
     if (manualKeepCount >= maxManualKeeps) {
-      alert("You have reached the maximum of " + maxManualKeeps + " manual keeps.");
+      alert("You have reached the maximum of " + maxManualKeeps + " keeps.");
       return;
     }
     manualKeepCount++;
     showMessage("You kept your card.");
-    finalizeCard(selectedCardIndex);
+    hideBotSelection();
     selectedCardIndex = null;
     finalizeRound();
     updateDisplay();
-  }
-  window.keepSelectedCard = keepSelectedCard;
+  };
+
+  // (we no longer mark used or add to players[0].sum here—
+  //   we’ll sum everything at the end in showPreAdjustmentTotals)
 
   function finalizeCard(index) {
     const card = playerHand[index];
@@ -207,20 +205,29 @@ window.onload = function() {
   }
 
   // ---------------------
-  // 2) after 10 rounds, show totals before guess
+  // Round Progression
   // ---------------------
   function finalizeRound() {
+    // still tally bot cards into their .sum each round
+    for (let i = 1; i < players.length; i++) {
+      players[i].sum += players[i].currentCard;
+      players[i].currentCard = null;
+    }
+
     currentRound++;
     if (currentRound < totalRounds) {
       document.getElementById("drawCardBtn").style.display = "block";
     } else {
+      // 3) at end of round 10, show totals before guess
       showPreAdjustmentTotals();
     }
   }
 
+  // ---------------------
+  // 3) Show totals (your box + bots) before guessing
+  // ---------------------
   function showPreAdjustmentTotals() {
     hideAllPages();
-    // ensure the summary container exists
     let preDiv = document.getElementById("preAdjustmentPage");
     if (!preDiv) {
       preDiv = document.createElement("div");
@@ -228,24 +235,32 @@ window.onload = function() {
       preDiv.classList.add("hidden");
       document.body.appendChild(preDiv);
     }
-    // build summary
-    let html = `<h2>Round ${totalRounds} Complete!</h2>`;
-    html += `<p>Your Total (before guessing/adjustments): ${players[0].sum}</p>`;
+
+    // compute your hand total
+    const playerTotal = playerHand.reduce((sum, c) => sum + c.value, 0);
+    // store it so adjustments work off this
+    players[0].sum = playerTotal;
+
+    let html = `<h2>All ${totalRounds} Rounds Done!</h2>`;
+    html += `<p>Your Total (pre‑guesses/adjustments): ${playerTotal}</p>`;
     for (let i = 1; i < players.length; i++) {
-      html += `<p>Bot ${i} (${players[i].role}): ${players[i].sum}</p>`;
+      html += `<p>Bot ${i} (${players[i].role}): ${players[i].sum}</p>`;
     }
     preDiv.innerHTML = html;
     preDiv.classList.remove("hidden");
 
-    // after 3 seconds, move on to the guess screen
+    // after 3 s, move to the guess screen
     setTimeout(showGuessSidebar, 3000);
   }
 
+  // ---------------------
+  // Messaging & Display
+  // ---------------------
   function showMessage(msg) {
-    const msgDiv = document.getElementById("message");
-    msgDiv.textContent = msg;
-    msgDiv.classList.remove("hidden");
-    setTimeout(() => msgDiv.classList.add("hidden"), 1500);
+    const m = document.getElementById("message");
+    m.textContent = msg;
+    m.classList.remove("hidden");
+    setTimeout(() => m.classList.add("hidden"), 1500);
   }
 
   function updateDisplay() {
@@ -259,13 +274,16 @@ window.onload = function() {
     document.getElementById("endGamePage").classList.remove("hidden");
   }
 
+  // ---------------------
+  // Guess Adjustments & Results
+  // ---------------------
   window.applyGuessAdjustments = function() {
     const guess1 = document.getElementById("guessBot1").value;
     const guess2 = document.getElementById("guessBot2").value;
     const guess3 = document.getElementById("guessBot3").value;
     let adjustment = 0;
     for (let i = 1; i < 4; i++) {
-      let guess = i === 1 ? guess1 : i === 2 ? guess2 : guess3;
+      const guess = (i === 1 ? guess1 : i === 2 ? guess2 : guess3);
       if (guess === players[i].role) {
         if (playerRole === "Diplomat") {
           const avg = players.reduce((a, p) => a + p.sum, 0) / players.length;
@@ -280,29 +298,29 @@ window.onload = function() {
   };
 
   function showResults(adjustment) {
-    const resultsDiv = document.getElementById("results");
-    let resultsHTML = `<p>Your Role: ${players[0].role}</p>`
-                    + `<p>Your Total Sum (after adjustments): ${players[0].sum}</p>`;
+    const rd = document.getElementById("results");
+    let html = `<p>Your Role: ${players[0].role}</p>`
+             + `<p>Your Total (post‑adjust): ${players[0].sum}</p>`;
     for (let i = 1; i < players.length; i++) {
-      resultsHTML += `<p>Bot ${i} (Role: ${players[i].role})</p>`;
+      html += `<p>Bot ${i} (Role: ${players[i].role})</p>`;
     }
-    resultsHTML += `<p>Guess Adjustment: ${adjustment >= 0 ? '+' : ''}${adjustment} points</p>`;
+    html += `<p>Guess Adj: ${adjustment >= 0 ? "+" : ""}${adjustment}</p>`;
     const sums = players.map(p => p.sum);
-    let outcome = "";
-    if (players[0].role === "Businessman") {
+    let outcome;
+    if (playerRole === "Businessman") {
       outcome = (players[0].sum === Math.max(...sums))
-        ? "You win! (Highest sum achieved)" : "You lose. (Did not achieve highest)";
-    } else if (players[0].role === "Athlete") {
+        ? "You win! (Highest sum)" : "You lose. (Not highest)";
+    } else if (playerRole === "Athlete") {
       outcome = (players[0].sum === Math.min(...sums))
-        ? "You win! (Lowest sum achieved)" : "You lose. (Did not achieve lowest)";
+        ? "You win! (Lowest sum)" : "You lose. (Not lowest)";
     } else {
       outcome = (players[0].sum !== Math.max(...sums) && players[0].sum !== Math.min(...sums))
         ? "You win! (Middle sum)" : "You lose. (Not middle)";
     }
-    resultsDiv.innerHTML = resultsHTML + `<h2>${outcome}</h2>`;
+    rd.innerHTML = html + `<h2>${outcome}</h2>`;
   }
 
-  // Expose navigation & game functions
+  // Expose
   window.goToMenu = goToMenu;
   window.showHowToPlay = showHowToPlay;
   window.showSettings = showSettings;
@@ -312,7 +330,7 @@ window.onload = function() {
   window.applyGuessAdjustments = applyGuessAdjustments;
 };
 
-// Get audio elements
+// Audio
 const bgMusic = new Audio("game-176807.mp3");
 const gameOverSound = new Audio("game-over-252897.mp3");
 bgMusic.loop = true;
