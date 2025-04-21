@@ -1,4 +1,3 @@
-<script>
 window.onload = function() {
   // Global game variables
   let players = []; // players[0] is you; players[1-3] are bots
@@ -7,6 +6,7 @@ window.onload = function() {
   const totalRounds = 10;
   const roles = ["Businessman", "Diplomat", "Athlete"];
   let playerRole = "";
+  // Each card is stored as an object: { value: number, used: boolean }
   let playerHand = [];
   let selectedCardIndex = null; // Index in playerHand of selected card
 
@@ -36,8 +36,7 @@ window.onload = function() {
   // Navigation Functions
   // ---------------------
   function hideAllPages() {
-    document.querySelectorAll("div[id$='Page'], #menu")
-            .forEach(page => page.classList.add("hidden"));
+    document.querySelectorAll("div[id$='Page'], #menu").forEach(page => page.classList.add("hidden"));
   }
 
   window.goToMenu = function() {
@@ -74,7 +73,7 @@ window.onload = function() {
     setTimeout(function(){
       document.getElementById("roleRevealPage").classList.remove("hidden");
       document.getElementById("playerRoleDisplay").textContent = playerRole;
-    }, 1000);
+    }, 1000); // 1 second suspense
   };
 
   // ---------------------
@@ -158,7 +157,9 @@ window.onload = function() {
     return false;
   }
 
-  // ← UPDATED: automatically finalize (keep) the selected card after trade
+  // ---------------------
+  // Trade + Auto‑Keep
+  // ---------------------
   window.initiateTrade = function(botIndex) {
     if (selectedCardIndex === null) {
       alert("Please select a card from your hand first.");
@@ -169,15 +170,13 @@ window.onload = function() {
     const bot = players[botIndex];
 
     if (botWillingToTrade(bot)) {
-      // Trade accepted
       [selectedCard.value, bot.currentCard] = [bot.currentCard, selectedCard.value];
       showMessage("Bot " + botIndex + " accepted the trade!");
     } else {
-      // Trade rejected
       showMessage("Bot " + botIndex + " rejected the trade. Your card remains available.");
     }
 
-    // ===> ADD this so your sum always advances by the final card value each round
+    // <— NEW: mark your final card used & add to your sum
     finalizeCard(selectedCardIndex);
 
     selectedCardIndex = null;
@@ -209,7 +208,16 @@ window.onload = function() {
     players[0].sum += card.value;
   }
 
+  // ---------------------
+  // Finalize Round & Bot Summing
+  // ---------------------
   function finalizeRound() {
+    // <— NEW: every bot adds its drawn/traded card to its sum
+    for (let i = 1; i < players.length; i++) {
+      players[i].sum += players[i].currentCard;
+      players[i].currentCard = null;
+    }
+
     currentRound++;
     if (currentRound < totalRounds) {
       document.getElementById("drawCardBtn").style.display = "block";
@@ -258,18 +266,18 @@ window.onload = function() {
 
   function showResults(adjustment) {
     const resultsDiv = document.getElementById("results");
-    let html = `<p>Your Role: ${players[0].role}</p>`
-             + `<p>Your Total Sum (after adjustments): ${players[0].sum}</p>`;
+    let resultsHTML = `<p>Your Role: ${players[0].role}</p>`
+                    + `<p>Your Total Sum (after adjustments): ${players[0].sum}</p>`;
     for (let i = 1; i < players.length; i++) {
-      html += `<p>Bot ${i} (Role: ${players[i].role})</p>`;
+      resultsHTML += `<p>Bot ${i} (Role: ${players[i].role}) — Sum: ${players[i].sum}</p>`;
     }
-    html += `<p>Guess Adjustment: ${adjustment >= 0 ? '+' : ''}${adjustment} points</p>`;
+    resultsHTML += `<p>Guess Adjustment: ${adjustment >= 0 ? '+' : ''}${adjustment} points</p>`;
     const sums = players.map(p => p.sum);
     let outcome = "";
-    if (playerRole === "Businessman") {
+    if (players[0].role === "Businessman") {
       outcome = (players[0].sum === Math.max(...sums))
         ? "You win! (Highest sum)" : "You lose. (Not highest)";
-    } else if (playerRole === "Athlete") {
+    } else if (players[0].role === "Athlete") {
       outcome = (players[0].sum === Math.min(...sums))
         ? "You win! (Lowest sum)" : "You lose. (Not lowest)";
     } else {
@@ -277,8 +285,8 @@ window.onload = function() {
               && players[0].sum !== Math.min(...sums))
         ? "You win! (Middle sum)" : "You lose. (Not middle)";
     }
-    html += `<h2>${outcome}</h2>`;
-    resultsDiv.innerHTML = html;
+    resultsHTML += `<h2>${outcome}</h2>`;
+    resultsDiv.innerHTML = resultsHTML;
   }
 
   // Expose navigation & game functions
@@ -291,9 +299,8 @@ window.onload = function() {
   window.applyGuessAdjustments = applyGuessAdjustments;
 };
 
-// Audio
+// Get audio elements
 const bgMusic = new Audio("game-176807.mp3");
 const gameOverSound = new Audio("game-over-252897.mp3");
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
-</script>
