@@ -1,3 +1,4 @@
+<script>
 window.onload = function() {
   // Global game variables
   let players = [];        // players[0] is you; players[1–3] are bots
@@ -134,6 +135,7 @@ window.onload = function() {
     if (playerHand[index].used) return;
     selectedCardIndex = index;
     updatePlayerHandDisplay();
+    showBotSelection();    // ← EDITED: now you can open the trade UI anytime you click a card
   }
 
   function showBotSelection() {
@@ -154,7 +156,7 @@ window.onload = function() {
   }
 
   // ---------------------
-  // 1) Modified: Trade stays open until you “Keep Card”
+  // 1) Trade stays open until “Keep Card”
   // ---------------------
   window.initiateTrade = function(botIndex) {
     if (selectedCardIndex === null) {
@@ -164,13 +166,12 @@ window.onload = function() {
     const selectedCard = playerHand[selectedCardIndex];
     const bot = players[botIndex];
     if (botWillingToTrade(bot)) {
-      // swap values
       [selectedCard.value, bot.currentCard] = [bot.currentCard, selectedCard.value];
       showMessage("Bot " + botIndex + " accepted the trade!");
     } else {
       showMessage("Bot " + botIndex + " rejected the trade. Keep trying!");
     }
-    // ↳ no finalizeRound, no hideBotSelection → you can pick another bot or another card
+    // no finalizeRound, no hideBotSelection → you can keep trading or pick another card
     selectedCardIndex = null;
     updateDisplay();
   };
@@ -195,20 +196,11 @@ window.onload = function() {
     updateDisplay();
   };
 
-  // (we no longer mark used or add to players[0].sum here—
-  //   we’ll sum everything at the end in showPreAdjustmentTotals)
-
-  function finalizeCard(index) {
-    const card = playerHand[index];
-    card.used = true;
-    players[0].sum += card.value;
-  }
-
   // ---------------------
   // Round Progression
   // ---------------------
   function finalizeRound() {
-    // still tally bot cards into their .sum each round
+    // bots tally each round
     for (let i = 1; i < players.length; i++) {
       players[i].sum += players[i].currentCard;
       players[i].currentCard = null;
@@ -218,13 +210,12 @@ window.onload = function() {
     if (currentRound < totalRounds) {
       document.getElementById("drawCardBtn").style.display = "block";
     } else {
-      // 3) at end of round 10, show totals before guess
       showPreAdjustmentTotals();
     }
   }
 
   // ---------------------
-  // 3) Show totals (your box + bots) before guessing
+  // 3) Show totals before guessing
   // ---------------------
   function showPreAdjustmentTotals() {
     hideAllPages();
@@ -236,9 +227,8 @@ window.onload = function() {
       document.body.appendChild(preDiv);
     }
 
-    // compute your hand total
+    // sum every card in your hand
     const playerTotal = playerHand.reduce((sum, c) => sum + c.value, 0);
-    // store it so adjustments work off this
     players[0].sum = playerTotal;
 
     let html = `<h2>All ${totalRounds} Rounds Done!</h2>`;
@@ -249,7 +239,6 @@ window.onload = function() {
     preDiv.innerHTML = html;
     preDiv.classList.remove("hidden");
 
-    // after 3 s, move to the guess screen
     setTimeout(showGuessSidebar, 3000);
   }
 
@@ -335,3 +324,4 @@ const bgMusic = new Audio("game-176807.mp3");
 const gameOverSound = new Audio("game-over-252897.mp3");
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
+</script>
