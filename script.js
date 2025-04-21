@@ -308,24 +308,7 @@ window.onload = function() {
       outcome = (players[0].sum !== Math.max(...sums) && players[0].sum !== Math.min(...sums)) ?
         "You win! (Your sum is in the middle)" : "You lose. (Your sum is not in the middle)";
     }
-    resultsHTML += `<h2>${outcome}</h2>`;
+    resultsHTML += `<p>${outcome}</p>`;
     resultsDiv.innerHTML = resultsHTML;
   }
-
-  // Expose functions globally.
-  window.goToMenu = goToMenu;
-  window.showHowToPlay = showHowToPlay;
-  window.showSettings = showSettings;
-  window.showCredits = showCredits;
-  window.drawCard = drawCard;
-  window.startGame = startGame;
-  window.applyGuessAdjustments = applyGuessAdjustments;
 };
-
-// Get audio elements
-const bgMusic = new Audio("game-176807.mp3");
-const gameOverSound = new Audio("game-over-252897.mp3");
-
-// Loop background music
-bgMusic.loop = true;
-bgMusic.volume = 0.5; // Default
