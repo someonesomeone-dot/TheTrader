@@ -1,4 +1,3 @@
-<script>
 window.onload = function() {
   // Global game variables
   let players = [];        // players[0] is you; players[1–3] are bots
@@ -324,4 +323,3 @@ const bgMusic = new Audio("game-176807.mp3");
 const gameOverSound = new Audio("game-over-252897.mp3");
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
-</script>
